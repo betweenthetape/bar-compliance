@@ -5,6 +5,10 @@ raw <- read_csv("spring-rates.csv")
 
 # ---- Table ----
 table <- raw |>
+  rename(
+    `Vertical displacement (mm)` = `Vertical mean (mm)`,
+    `Horizontal displacement (mm)` = `Horizontal mean (mm)`
+  ) |>
   arrange(`Vertical spring rate (N/mm)`) |>
   gt() |>
   opt_row_striping() |>
