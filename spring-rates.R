@@ -1,7 +1,9 @@
 library(tidyverse)
 library(gt)
 
-raw <- read_csv("spring-rates.csv")
+raw <- read_csv("spring-rates.csv") |>
+  mutate(Bar = str_replace_all(Bar, "30mm", "35 mm")) |>
+  mutate(Bar = str_replace_all(Bar, "50mm", "50 mm"))
 
 # ---- Table ----
 table <- raw |>
@@ -73,12 +75,9 @@ raw |>
     strip.text = element_text(hjust = 0)
   )
 
-# Correlation plot: vertical and horiztonal spring rates
-# No correlation
+# ---- Analysis ----
 raw |>
-  # filter(!str_detect(Bar, "^Fasst")) |>
-  ggplot(aes(
-    x = `Vertical spring rate (N/mm)`,
-    y = `Horizontal spring rate (N/mm)`
-  )) +
-  geom_point()
+  select(bar = Bar, vert = 5, hori = 6) |>
+  filter(!str_detect(bar, "^Fasst")) |>
+  mutate(compliance_diff = (vert - hori) / hori * 100) |>
+  summarise(avg_compliance_diff = mean(compliance_diff))
